@@ -1,36 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Onboarding from 'react-native-onboarding-swiper';
-import { Image, StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { Image, StyleSheet, View, Text, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-// Custom Next Button (Arrow)
-const NextButton = ({ isLight, ...props }) => (
-    <TouchableOpacity
-        style={styles.nextButton}
-        {...props}
-    >
-        <Text style={styles.nextButtonText}>›</Text>
-    </TouchableOpacity>
-);
+// Custom Empty Next Button (to remove the default next button)
+const NextButton = () => null;
 
-// Custom Skip Button (Top Right)
-const SkipButton = ({ skipLabel, ...props }) => (
-    <TouchableOpacity
-        style={styles.skipButton}
-        {...props}
-    >
-        <Text style={styles.skipButtonText}>SKIP</Text>
-    </TouchableOpacity>
-);
-
-// Custom Done Button (similar to Next but navigates to login)
+// Custom Done Button
 const DoneButton = ({ isLight, ...props }) => (
-    <TouchableOpacity
-        style={[styles.nextButton, { backgroundColor: '#B413EC' }]}
-        {...props}
-    >
-        <Text style={styles.nextButtonText}>›</Text>
-    </TouchableOpacity>
+    <View style={styles.doneButtonContainer}>
+        <TouchableOpacity
+            style={styles.doneButton}
+            {...props}
+        >
+            <Text style={styles.doneButtonText}>GET STARTED</Text>
+        </TouchableOpacity>
+    </View>
 );
 
 const CustomDot = ({ selected }) => {
@@ -51,24 +36,26 @@ export const IntroductionScreen = () => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.mainContainer}>
-            {/* Swipe Indicator */}
-            <View style={styles.swipeIndicatorContainer}>
-                <Text style={styles.swipeIndicatorText}>Swipe to explore</Text>
-                <View style={styles.swipeIndicatorLine} />
-            </View>
+        <SafeAreaView style={styles.mainContainer}>
+            {/* Skip button placed outside of Onboarding component */}
+            <TouchableOpacity
+                style={styles.skipButton}
+                onPress={() => navigation.navigate('Login')}
+            >
+                <Text style={styles.skipButtonText}>SKIP</Text>
+            </TouchableOpacity>
 
             <Onboarding
                 onDone={() => navigation.navigate('Login')}
-                onSkip={() => navigation.navigate('Login')}
-                DotComponent={CustomDot}
                 NextButtonComponent={NextButton}
-                SkipButtonComponent={SkipButton}
                 DoneButtonComponent={DoneButton}
+                SkipButtonComponent={() => null} // Remove default skip button
+                DotComponent={CustomDot}
                 titleStyles={styles.title}
                 subTitleStyles={styles.subtitle}
                 bottomBarHighlight={false}
                 containerStyles={styles.container}
+                imageContainerStyles={styles.imageContainerWrapper}
                 pages={[
                     {
                         backgroundColor: '#121212',
@@ -128,7 +115,13 @@ export const IntroductionScreen = () => {
                     },
                 ]}
             />
-        </View>
+
+            {/* Swipe Indicator */}
+            <View style={styles.swipeIndicatorContainer}>
+                <Text style={styles.swipeIndicatorText}>Swipe to explore</Text>
+                <View style={styles.swipeIndicatorLine} />
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -140,45 +133,54 @@ const styles = StyleSheet.create({
         backgroundColor: '#121212',
     },
     container: {
+        flex: 1,
         backgroundColor: '#121212',
     },
-    // Next Button Styles
-    nextButton: {
-        position: 'absolute',
-        right: 20,
-        top: '50%',
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#333',
-        justifyContent: 'center',
-        alignItems: 'center',
-        transform: [{ translateY: -25 }],
-    },
-    nextButtonText: {
-        color: '#fff',
-        fontSize: 40,
-        fontWeight: '300',
-    },
-    // Skip Button Styles
+    // Skip Button Styles - Now outside Onboarding
     skipButton: {
         position: 'absolute',
-        top: 50,
         right: 20,
+        top: 40,
         padding: 10,
-        zIndex: 1,
+        zIndex: 999,
     },
     skipButtonText: {
         color: '#666',
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: '600',
+    },
+    // Done Button Styles
+    doneButtonContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 50,
+    },
+    doneButton: {
+        paddingVertical: 15,
+        paddingHorizontal: 40,
+        backgroundColor: '#B413EC',
+        borderRadius: 25,
+        shadowColor: '#B413EC',
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    doneButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+        letterSpacing: 1,
     },
     // Swipe Indicator Styles
     swipeIndicatorContainer: {
         position: 'absolute',
         top: 100,
         left: 20,
-        zIndex: 1,
+        zIndex: 998,
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -192,14 +194,16 @@ const styles = StyleSheet.create({
         height: 2,
         backgroundColor: '#333',
     },
-    // Image and Content Styles
+    // Image Container Styles
+    imageContainerWrapper: {
+        paddingTop: 60,
+    },
     imageContainer: {
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
         width: 280,
         height: 280,
-        marginTop: -50, // Move content up to accommodate the swipe indicator
     },
     image: {
         width: 200,
