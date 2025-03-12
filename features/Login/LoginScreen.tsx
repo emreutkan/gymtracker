@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export const LoginScreen = () => {
+    const navigation = useNavigation();
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -39,10 +42,14 @@ export const LoginScreen = () => {
 
                 <View style={styles.signupContainer}>
                     <Text style={styles.signupText}>Don't have an account? </Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
                         <Text style={styles.signupLink}>Sign Up</Text>
                     </TouchableOpacity>
                 </View>
+
+                <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('Home')}>
+                    <Text style={styles.skipButtonText}>Skip</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -132,6 +139,14 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     signupLink: {
+        color: '#B413EC',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    skipButton: {
+        marginTop: 30,
+    },
+    skipButtonText: {
         color: '#B413EC',
         fontSize: 14,
         fontWeight: 'bold',
